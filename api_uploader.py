@@ -2,6 +2,9 @@ import os, requests, logging
 import json, time
 from itertools import islice
 from manage_jobs import create_job, get_jobs, update_job_status
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ###### Job Variables
 accountID=613022171325988864
@@ -12,6 +15,7 @@ entityCol = "CR011"
 timeFormat="YYYY-M-DD H:m:s.SS"
 timeZone="America/Los_Angeles"
 timeIdentifier="time"
+injectEntity=True
 r = {}
 
 ###### Automatic variables
@@ -23,7 +27,6 @@ i=0
 chunksize=10000
 filesize=5000000
 filesizemax=filesize-1
-injectEntity=False
 
 for input_file in os.listdir("./"+input_file_directory):
   print("Processing "+str(input_file))
@@ -49,9 +52,8 @@ for input_file in os.listdir("./"+input_file_directory):
     ##### Get CSV header
     with open("./"+input_file_directory+'/'+input_file) as f:
       header = f.readline()
-      if entityCol not in header:
+      if injectEntity:
         header = header.strip('\n').strip('\r')+','+entityCol+'\n'
-        injectEntity=True
     
     ##### Process upload in chunks
     with open("./"+input_file_directory+'/'+input_file) as f:
@@ -80,6 +82,7 @@ for input_file in os.listdir("./"+input_file_directory):
           payload = '\n'.join(lines)
         if i>0:
           payload=header+payload
+        
         authTokenCSV = {"content-type":"text/csv", "Authorization" : "Bearer "+apiToken}
         r = requests.post(serverURL + resp['url'], data=payload, headers=authTokenCSV, verify=False)
         print("Chunk "+str(i)+" has been uploaded.")

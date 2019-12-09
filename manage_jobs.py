@@ -1,15 +1,8 @@
 import requests
 import json
+import urllib3
 
-###### Job Variables
-# job types: DIGEST, INGESTDATA
-# job statuses: CREATED, PENDING, RUNNING, COMPLETED, FAILED
-jobType="INGESTDATA"
-jobStatus="PENDING"
-accountID = 648687965271797760
-datastreamID=653364802185764864
-serverURL="https://staging.falkonry.ai"
-apiToken="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE4OTEwMzU4NTcsICJlbWFpbCIgOiAid2FycmVuLmtpbUBmYWxrb25yeS5jb20iLCAibmFtZSIgOiAid2FycmVuLmtpbUBmYWxrb25yeS5jb20iLCAic2Vzc2lvbiIgOiAiNjUyNjU2NTkyMTczNjA4OTYwIiB9.uSRCgbVByFjyJtebYkoHl2_xNf77bzeTywFQaJ-yFl0"
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def create_job(apiToken, serverURL, accountID, datastreamID, jobType, entityCol, timeIdentifier, timeFormat, timeZone):
   # Create Token Strings
