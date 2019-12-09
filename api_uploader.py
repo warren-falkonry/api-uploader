@@ -8,7 +8,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ###### Job Variables
 accountID=613022171325988864
-datastreamID=653732561220059136
+datastreamID=653739899805024256
 serverURL="https://200.54.255.130"
 apiToken="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE4ODE2MDM0NTUsICJlbWFpbCIgOiAicm9kcmlnby5henVhQHNnc2NtLmNsIiwgIm5hbWUiIDogInJvZHJpZ28uYXp1YUBzZ3NjbS5jbCIsICJzZXNzaW9uIiA6ICI2MTMwOTQyMzEwODc3MTAyMDgiIH0.ieBIRCnlVNQVvxDrZ0IcJ1X3vU5jsc86ll1fGbOKqnY"
 entityCol = "CR011"
@@ -16,6 +16,7 @@ timeFormat="YYYY-M-DD H:m:s.SS"
 timeZone="America/Los_Angeles"
 timeIdentifier="time"
 injectEntity=True
+maxPendingJobs=20
 r = {}
 
 ###### Automatic variables
@@ -30,6 +31,15 @@ filesizemax=filesize-1
 for input_file in os.listdir("./"+input_file_directory):
   print("Processing "+str(input_file))
   logging.info("JOB: Processing "+str(input_file))
+  
+  # Check for pending DIGEST jobs
+  runningDigestJobs=get_jobs(apiToken, serverURL, accountID, datastreamID, 'DIGEST', 'CREATED')
+  while len(runningDigestJobs) > maxPendingJobs:
+    print("DIGEST jobs in pending status were found:")
+    print(runningDigestJobs)
+    print("Sleeping for 20 seconds before attempting resume...")
+    time.sleep(20)
+    runningDigestJobs=get_jobs(apiToken, serverURL, accountID, datastreamID, 'DIGEST', 'CREATED')
   
   # Create INGEST endpoint
   resp=create_job(apiToken, serverURL, accountID, datastreamID, 'INGESTDATA', entityCol, timeIdentifier, timeFormat, timeZone)
@@ -64,15 +74,6 @@ for input_file in os.listdir("./"+input_file_directory):
         next_n_lines = list(islice(f, chunksize))
         if not next_n_lines:
           break
-          
-        # Check for pending DIGEST jobs
-        runningDigestJobs=get_jobs(apiToken, serverURL, accountID, datastreamID, 'DIGEST', 'CREATED')
-        while runningDigestJobs:
-          print("DIGEST jobs in pending status were found:")
-          print(runningDigestJobs)
-          print("Sleeping for 20 seconds before attempting resume...")
-          time.sleep(20)
-          runningDigestJobs=get_jobs(apiToken, serverURL, accountID, datastreamID, 'DIGEST', 'CREATED')
         
         # Start INGEST job
         lines = [x.strip('\n').strip('\r') for x in next_n_lines]
