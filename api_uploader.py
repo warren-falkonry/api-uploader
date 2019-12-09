@@ -1,4 +1,4 @@
-import os, requests
+import os, requests, logging
 import json, time
 from itertools import islice
 from manage_jobs import create_job, get_jobs, update_job_status
@@ -15,6 +15,9 @@ timeIdentifier="time"
 r = {}
 
 ###### Automatic variables
+timestr = time.strftime("%Y%m%d-%H%M%S")
+log='./logs/'+str(datastreamID)+'-'+timestr+'.log'
+logging.basicConfig(filename=log,level=logging.DEBUG,format='%(asctime)s %(message)s', datefmt='%d/%m/%Y %H:%M:%S')
 input_file_directory="files-to-upload"
 i=0
 chunksize=10000
@@ -24,9 +27,11 @@ injectEntity=False
 
 for input_file in os.listdir("./"+input_file_directory):
   print("Processing "+str(input_file))
+  logging.info("JOB: Processing "+str(input_file))
   with open("./"+input_file_directory+'/'+input_file) as f:
     ###### Determine optimal chunksize for specified filesize
     print("Determining optimal number of lines for ~5MB chunksize...")
+    logging.info("JOB: Determining optimal number of lines for ~5MB chunksize...")
     while filesize > filesizemax:
       with open("./"+input_file_directory+'/'+input_file) as f:
         head = list(islice(f, chunksize))
@@ -39,6 +44,7 @@ for input_file in os.listdir("./"+input_file_directory):
           chunksize=chunksize-100
       os.remove("checksize")
     print("Using chunksize=" + str(chunksize))
+    logging.info("JOB: Using chunksize=" + str(chunksize))
     
     ##### Get CSV header
     with open("./"+input_file_directory+'/'+input_file) as f:
@@ -77,7 +83,10 @@ for input_file in os.listdir("./"+input_file_directory):
         authTokenCSV = {"content-type":"text/csv", "Authorization" : "Bearer "+apiToken}
         r = requests.post(serverURL + resp['url'], data=payload, headers=authTokenCSV)
         print("Chunk "+str(i)+" has been uploaded.")
-        i=i+1
-          
+        logging.info("JOB: Chunk "+str(i)+" has been uploaded.")
+        
         # End INGEST job
+        logging.info("JOB: Closing INGEST job endpoint for chunk "+str(i))
         endJob=update_job_status(apiToken, serverURL, accountID, [resp['linkid']], 'INGESTDATA', 'COMPLETED')
+        i=i+1
+  logging.info("JOB: Completed upload of "+str(input_file))
