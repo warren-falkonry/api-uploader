@@ -4,11 +4,11 @@ from itertools import islice
 from manage_jobs import create_job, get_jobs, update_job_status
 
 ###### Job Variables
-accountID = 648687965271797760
-datastreamID=653532737151868928
-serverURL="https://staging.falkonry.ai"
-apiToken="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE4OTEwMzU4NTcsICJlbWFpbCIgOiAid2FycmVuLmtpbUBmYWxrb25yeS5jb20iLCAibmFtZSIgOiAid2FycmVuLmtpbUBmYWxrb25yeS5jb20iLCAic2Vzc2lvbiIgOiAiNjUyNjU2NTkyMTczNjA4OTYwIiB9.uSRCgbVByFjyJtebYkoHl2_xNf77bzeTywFQaJ-yFl0"
-entityCol = "ENTITY"
+accountID=613022171325988864
+datastreamID=653686781111365632
+serverURL="https://200.54.255.130"
+apiToken="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE4ODE2MDM0NTUsICJlbWFpbCIgOiAicm9kcmlnby5henVhQHNnc2NtLmNsIiwgIm5hbWUiIDogInJvZHJpZ28uYXp1YUBzZ3NjbS5jbCIsICJzZXNzaW9uIiA6ICI2MTMwOTQyMzEwODc3MTAyMDgiIH0.ieBIRCnlVNQVvxDrZ0IcJ1X3vU5jsc86ll1fGbOKqnY"
+entityCol = "CR011"
 timeFormat="YYYY-M-DD H:m:s.SS"
 timeZone="America/Los_Angeles"
 timeIdentifier="time"
@@ -81,7 +81,7 @@ for input_file in os.listdir("./"+input_file_directory):
         if i>0:
           payload=header+payload
         authTokenCSV = {"content-type":"text/csv", "Authorization" : "Bearer "+apiToken}
-        r = requests.post(serverURL + resp['url'], data=payload, headers=authTokenCSV)
+        r = requests.post(serverURL + resp['url'], data=payload, headers=authTokenCSV, verify=False)
         print("Chunk "+str(i)+" has been uploaded.")
         logging.info("JOB: Chunk "+str(i)+" has been uploaded.")
         
