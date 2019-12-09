@@ -54,10 +54,4 @@ def update_job_status(apiToken, serverURL, accountID, jobIds, jobType, jobStatus
     dataValue = {'jobType': jobType, 'status': jobStatus}
     r = requests.put(serverURL + url, data=str(dataValue), headers=authToken)
     rinfo = r.json()
-    if rinfo:
-      output.append({'status':rinfo['status'], 'datastream':rinfo['datastream']})
-  return output
-  
-runningDigestJobs=get_jobs(apiToken, serverURL, accountID, datastreamID, 'DIGEST', 'CREATED')
-if runningDigestJobs:
-  print(runningDigestJobs)
+  return rinfo
