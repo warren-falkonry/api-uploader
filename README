@@ -1,0 +1,27 @@
+# Python API Uploader
+
+## Requirements
+* Python 2 or 3
+* requests module
+
+## Basic Usage
+### Configure `config.json`
+```
+{
+  "accountID": 12345671325988864,
+  "datastreamID": 89101122513838080,
+  "serverURL": "https://1.2.3.4",
+  "apiToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE4ODE2MDM0NTUsICJlbWFpbCIgOiAicm9kcmlnby5henVhQHNnc2NtLmNsIiwgIm5hbWUiIDogInJvZHJpZ28uYXp1YUBzZ3NjbS5jbCIsICJzZNECUnnjdcjdkdoCKTAyMDgiIH0.ieBIRCnlVNQVvxDrZ0IcJ1X3vU5jsc86ll1fGbOKqnY",
+  "entityCol": "SOMENAME",
+  "injectEntity": "True",
+  "timeFormat": "YYYY-M-DD H:m:s.SS",
+  "timeZone": "America/Los_Angeles",
+  "timeIdentifier": "time",
+  "maxPendingJobs": 20
+}
+```
+#### Special Config Definitions
+* `entityCol` - The column header label for the entity (to be used if it exists, or created if it does not exist)
+* `injectEntity` - `True` if the data does not have an entity column.  `False` if the data already has the entity column defined above
+* `maxPendingJobs` - Intended for metering DIGEST jobs, but this is not currently supported due to inconsistent digest behavior with segmented ingest sessions.  May be enabled in the future, but it is ignored and can be omitted or left as-is.
+

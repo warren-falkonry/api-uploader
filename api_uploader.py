@@ -1,23 +1,34 @@
-import os, requests, logging
-import json, time
+import os, requests, logging, json, time, urllib3, sys
 from itertools import islice
-from manage_jobs import create_job, get_jobs, update_job_status
-import urllib3
+from tools.job.manage import *
+
+# Configuration Source File (see README for details)
+configFilename="config.json"
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+# read file
+with open('./config/'+configFilename, 'r') as ff:
+  configdata=ff.read()
+  config = json.loads(configdata)
+
 ###### Job Variables
-accountID=613022171325988864
-datastreamID=653739899805024256
-serverURL="https://200.54.255.130"
-apiToken="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE4ODE2MDM0NTUsICJlbWFpbCIgOiAicm9kcmlnby5henVhQHNnc2NtLmNsIiwgIm5hbWUiIDogInJvZHJpZ28uYXp1YUBzZ3NjbS5jbCIsICJzZXNzaW9uIiA6ICI2MTMwOTQyMzEwODc3MTAyMDgiIH0.ieBIRCnlVNQVvxDrZ0IcJ1X3vU5jsc86ll1fGbOKqnY"
-entityCol = "CR011"
-timeFormat="YYYY-M-DD H:m:s.SS"
-timeZone="America/Los_Angeles"
-timeIdentifier="time"
-injectEntity=True
-maxPendingJobs=20
-r = {}
+accountID=int(config['accountID'])
+datastreamID=int(config['datastreamID'])
+serverURL=str(config['serverURL'])
+apiToken=str(config['apiToken'])
+entityCol=str(config['entityCol'])
+timeFormat=str(config['timeFormat'])
+timeZone=str(config['timeZone'])
+timeIdentifier=str(config['timeIdentifier'])
+injectEntity=bool(config['injectEntity'])
+maxPendingJobs=int(config['maxPendingJobs'])
+
+###### Check Variables are Set
+for var in ['accountID','datastreamID','serverURL','apiToken','entityCol','timeFormat','timeZone','timeIdentifier','injectEntity']:
+  if not globals()[var]:
+    print(var+" has not been set")
+    sys.exit()
 
 ###### Automatic variables
 timestr = time.strftime("%Y%m%d-%H%M%S")
@@ -27,6 +38,9 @@ input_file_directory="files-to-upload"
 chunksize=10000
 filesize=5000000
 filesizemax=filesize-1
+
+# Create INGEST endpoint
+resp=create_job(apiToken, serverURL, accountID, datastreamID, 'INGESTDATA', entityCol, timeIdentifier, timeFormat, timeZone)
 
 for input_file in os.listdir("./"+input_file_directory):
   print("Processing "+str(input_file))
@@ -40,9 +54,6 @@ for input_file in os.listdir("./"+input_file_directory):
     print("Sleeping for 20 seconds before attempting resume...")
     time.sleep(20)
     runningDigestJobs=get_jobs(apiToken, serverURL, accountID, datastreamID, 'DIGEST', 'CREATED')
-  
-  # Create INGEST endpoint
-  resp=create_job(apiToken, serverURL, accountID, datastreamID, 'INGESTDATA', entityCol, timeIdentifier, timeFormat, timeZone)
   i=0
   with open("./"+input_file_directory+'/'+input_file) as f:
     ###### Determine optimal chunksize for specified filesize
@@ -89,7 +100,8 @@ for input_file in os.listdir("./"+input_file_directory):
         print("Chunk "+str(i)+" has been uploaded.")
         logging.info("JOB: Chunk "+str(i)+" has been uploaded.")
         i=i+1
-  # End INGEST job
-  logging.info("JOB: Closing INGEST job endpoint for chunk "+str(i))
-  endJob=update_job_status(apiToken, serverURL, accountID, [resp['linkid']], 'INGESTDATA', 'COMPLETED')
   logging.info("JOB: Completed upload of "+str(input_file))
+  
+# End INGEST job
+logging.info("JOB: Closing INGEST job")
+endJob=update_job_status(apiToken, serverURL, accountID, [resp['linkid']], 'INGESTDATA', 'COMPLETED')

@@ -1,0 +1,12 @@
+{
+  "accountID": 648687965271797760,
+  "datastreamID": 654466453039628288,
+  "serverURL": "https://staging.falkonry.ai",
+  "apiToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE4OTEwMzU4NTcsICJlbWFpbCIgOiAid2FycmVuLmtpbUBmYWxrb25yeS5jb20iLCAibmFtZSIgOiAid2FycmVuLmtpbUBmYWxrb25yeS5jb20iLCAic2Vzc2lvbiIgOiAiNjUyNjU2NTkyMTczNjA4OTYwIiB9.uSRCgbVByFjyJtebYkoHl2_xNf77bzeTywFQaJ-yFl0",
+  "entityCol": "CR011",
+  "injectEntity": "True",
+  "timeFormat": "YYYY-M-DD H:m:s.SS",
+  "timeZone": "America/Los_Angeles",
+  "timeIdentifier": "time",
+  "maxPendingJobs": 20
+}
