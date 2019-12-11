@@ -5,9 +5,6 @@ from tools.job.manage import *
 # Configuration Source File (see README for details)
 configFilename="config.json"
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-# read file
 with open('./config/'+configFilename, 'r') as ff:
   configdata=ff.read()
   config = json.loads(configdata)
@@ -40,6 +37,7 @@ filesize=5000000
 filesizemax=filesize-1
 
 # Create INGEST endpoint
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 resp=create_job(apiToken, serverURL, accountID, datastreamID, 'INGESTDATA', entityCol, timeIdentifier, timeFormat, timeZone)
 
 for input_file in os.listdir("./"+input_file_directory):
