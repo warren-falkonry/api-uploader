@@ -29,7 +29,7 @@
 ### Running the Job
 1. Copy the `api-loader` application to the server where you will run the job
 2. Using a screen session (or nohup) is recommended
-3. Place the CSV files to upload 
+3. Place the CSV files to upload into the `files-to-upload` folder
 4. Run `python api_uploader.py` to start the upload process
 
 ### Logs
