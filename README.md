@@ -3,7 +3,7 @@
 ## Requirements
 * Python 2 or 3
 * requests module (e.g. `pip install requests`)
-* Only tested on Linux (but "theoretically" should work with Python on Windows...)
+* Only tested on Linux/MacOS (but "theoretically" should work with Python on Windows...)
 
 ## Basic Usage
 ### Configure `config.json` in the `config` folder
